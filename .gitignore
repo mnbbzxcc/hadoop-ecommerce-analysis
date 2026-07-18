@@ -1,0 +1,22 @@
+# 自定义拦截器flume-interceptor
+/flume-interceptor/.idea/
+/flume-interceptor/target/
+
+# spring boot服务层analysis
+analysis/.idea/
+analysis/target/
+analysis/HELP.md
+
+# flink作业flink-kafka-redis
+flink-kafka-redis/.idea/
+flink-kafka-redis/target/
+flink-kafka-redis/dependency-reduced-pom.xml
+
+# flume-hdfs-lib jar包
+flume-hdfs-lib/*.jar
+
+# vue可视化层frontend
+frontend/.vscode/
+frontend/node_modules/
+frontend/dist/
+frontend/build/

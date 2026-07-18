@@ -1,0 +1,34 @@
+version: '3.8'
+
+networks:
+  hadoop-ecommerce-network:
+    external: true
+
+services:
+  flume:
+    image: probablyfine/flume:2.0.0
+    container_name: flume
+    hostname: flume
+    environment:
+      - FLUME_AGENT_NAME=agent
+    volumes:
+      - ../flume-conf/flume-to-kafka.conf:/opt/flume-config/flume.conf
+      - ../sampled_data:/flume/data
+    networks:
+      - hadoop-ecommerce-network
+    restart: unless-stopped
+
+  flume-hdfs:
+    image: my-flume-hdfs:2.0.0          # 使用自定义镜像
+    container_name: flume-hdfs
+    hostname: flume-hdfs
+    environment:
+      - FLUME_AGENT_NAME=agent
+      - HADOOP_CONF_DIR=/opt/hadoop-conf   # 告诉 HDFS Sink 配置文件位置
+      - FLUME_JAVA_OPTS="-Xmx1024m -Xms512m"
+    volumes:
+      - ../flume-conf/flume-kafka-hdfs.conf:/opt/flume-config/flume.conf
+      - ../flume-hdfs-conf:/opt/hadoop-conf:ro
+    networks:
+      - hadoop-ecommerce-network
+    restart: unless-stopped

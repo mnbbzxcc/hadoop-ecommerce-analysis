@@ -1,0 +1,21 @@
+version: '3.8'
+
+networks:
+  hadoop-ecommerce-network:
+    external: true
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hadoop-ecommerce-network
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

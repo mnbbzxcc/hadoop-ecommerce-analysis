@@ -1,0 +1,13 @@
+spring:
+  redis:
+    host: localhost   # Redis 容器映射到宿主机的地址
+    port: 6379
+    timeout: 2000ms
+
+# Hive 数据源自定义配置
+hive:
+  jdbc:
+    url: jdbc:hive2://localhost:10000/default
+    driver-class-name: org.apache.hive.jdbc.HiveDriver
+    username:
+    password:

@@ -1,0 +1,43 @@
+version: '3.8'
+
+networks:
+  hadoop-ecommerce-network:
+    external: true
+
+services:
+  jobmanager:
+    image: flink:1.13.6-scala_2.12
+    container_name: flink-jobmanager
+    hostname: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    volumes:
+      - flink-checkpoints:/tmp/flink-checkpoints
+      - flink-savepoints:/tmp/flink-savepoints
+    command: jobmanager
+    networks:
+      - hadoop-ecommerce-network
+    restart: unless-stopped
+
+  taskmanager:
+    image: flink:1.13.6-scala_2.12
+    container_name: flink-taskmanager
+    hostname: taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
+    volumes:
+      - flink-checkpoints:/tmp/flink-checkpoints
+      - flink-savepoints:/tmp/flink-savepoints
+    command: taskmanager
+    networks:
+      - hadoop-ecommerce-network
+    depends_on:
+      - jobmanager
+    restart: unless-stopped
+
+volumes:
+  flink-checkpoints:
+  flink-savepoints:

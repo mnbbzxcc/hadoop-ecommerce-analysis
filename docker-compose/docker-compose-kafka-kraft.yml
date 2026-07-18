@@ -1,0 +1,45 @@
+version: '3.8'
+
+networks:
+  hadoop-ecommerce-network:
+    external: true
+
+services:
+  kafka:
+    image: apache/kafka:3.7.0                # 使用 Apache 官方镜像，版本 3.7.0（也可选 3.6.x）
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"                           # 客户端连接端口
+    environment:
+      # KRaft 模式必须配置的集群 ID
+      KAFKA_CLUSTER_ID: "ecommerce-cluster-1" # 任意字符串，但必须唯一
+      # 节点角色：同时作为 broker 和 controller
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      # 节点 ID
+      KAFKA_NODE_ID: 1
+      # 控制器列表（格式：节点ID@主机名:端口）
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      # 监听器配置
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      # 控制器监听器名称（必须与上面定义的 CONTROLLER 对应）
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      # 日志目录
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      # 自动创建主题（方便测试）
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # 单节点配置，副本因子设为 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - hadoop-ecommerce-network
+    restart: unless-stopped
+    volumes:
+      - kafka-data:/var/lib/kafka/data          # 持久化 Kafka 数据
+
+volumes:
+  kafka-data:
